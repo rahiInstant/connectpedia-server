@@ -8,6 +8,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import path from "path";
 import { fileURLToPath } from "url";
+import { register } from "/controllers/auth.js";
 
 // config
 const __filename = fileURLToPath(import.meta.url);
@@ -18,7 +19,7 @@ const app = express();
 // middleware
 app.use(express.json());
 app.use(helmet());
-app.use(helmet.crossOriginResourcePolicy({ policy: true }));
+app.use(helmet.crossOriginResourcePolicy({ policy: "same-origin" }));
 app.use(morgan("common"));
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
@@ -37,6 +38,10 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
+// routes with file
+
+app.post('/auth/register', upload.single("picture"), register)
+
 // mongoose setup
 const port = process.env.PORT || 6001;
 mongoose
@@ -46,3 +51,7 @@ mongoose
   })
   .then(port, () => console.log(`server running at port: ${port}`))
   .catch((error) => console.log(`${error} did not connect.`));
+
+
+
+
